@@ -5,6 +5,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
@@ -20,15 +21,18 @@ import android.widget.Toast;
 
 import com.auviis.sdk.*;
 
-public class MainActivity extends AuviisActivity implements AuviisDelegate, CompoundButton.OnCheckedChangeListener, View.OnTouchListener {
+public class MainActivity extends Activity implements AuviisDelegate, CompoundButton.OnCheckedChangeListener, View.OnTouchListener {
     private boolean audioPermission = false;
     private long active_channel_id = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //
+        AuviisClass.getInstance().setDelegate(this);
+        AuviisClass.loadLibrary(this);
         //checking if you have the permission
-        requestAudioPermission();
+        AuviisClass.getInstance().requestAudioPermission();
         //
         Switch s = (Switch) findViewById(R.id.swFreeTalk);
 
@@ -49,15 +53,17 @@ public class MainActivity extends AuviisActivity implements AuviisDelegate, Comp
         }
     }
 
+    @Override
     public void onEnableAudioPermission(){
         audioPermission = true;
     }
+
+    @Override
     public void onDisableAudioPermission(){
 
     }
     public void startSDK(View v){
         AuviisClass.init(this,"6785JH889bhFGKU8904","PnHDEHHEIhjjAvcgQWUbcv");
-        AuviisClass.getInstance().setDelegate(this);
         AuviisClass.getInstance().connect();
         runOnUiThread(new Runnable() {
             @Override
